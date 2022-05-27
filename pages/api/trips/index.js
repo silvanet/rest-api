@@ -1,6 +1,10 @@
+import {getSession} from 'next-auth/react'
 import prisma from 'lib/prisma'
 
 export default async function handler(req, res) {
+  const session = await getSession({ req })
+  if (!session) return res.status(401).json({ message: 'Not logged in' })
+  
   if (req.method === 'GET') {
     const trips = await prisma.trip.findMany()
     

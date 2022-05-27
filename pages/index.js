@@ -1,7 +1,17 @@
+import Link from 'next/link'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import { signOut, useSession } from 'next-auth/react'
+import { useRouter } from "next/router"
 
 export default function Home() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
+  if (status === 'loading') {
+    return null
+  }
+
   const endpoints = [
     {
       name: 'GET /trips',
@@ -143,6 +153,25 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
+
+{session ? <p>You are logged in!</p> : <p>You are not logged in 😞. <Link href="/api/auth/signin">Login</Link>
+</p>}           
+      
+      {session && (
+          <p>
+            {session.user.email}{' '}
+            <button
+              className="underline"
+              onClick={() => {
+                signOut()
+                router.push('/')
+              }}
+            >
+              logout
+            </button>
+          </p>
+        )}
+
       <Head>
         <title>Trips API</title>
         <link rel='icon' href='/favicon.ico' />
